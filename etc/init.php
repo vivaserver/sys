@@ -11,6 +11,11 @@
   |   THIS IS NOT FREE SOFTWARE!
   +--------------------------------------------------------------------------
   */
+
+  // app's root is relative, app's home is absolute
+  $conf['app_home'] = substr($_SERVER["SCRIPT_FILENAME"],0,-strlen("index.php"));
+  $conf['app_root'] = str_replace('/var/www','',$conf['app_home']);
+
   require($conf['app_home']."etc/conf.php");
 
   load_file("lib/ez_sql.{$conf['db_server']}");
@@ -26,13 +31,13 @@
   load_file("core/user");
   load_file("core/auth");
 
+  @include($conf['app_home']."etc/models.php");
+
   $db   = new db($conf['db_user'],$conf['db_pass'],$conf['db_name'],$conf['db_host']);
   $tpl  = new clsTinyButStrong;
   $site = new site();
   $user = new user();
   $auth = new auth();
-
-  @include($conf['app_home']."etc/models.php");
 
   //
   // require app. or system file, in that order
