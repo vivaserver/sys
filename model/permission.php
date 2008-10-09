@@ -13,7 +13,7 @@
   */
 
   class permission extends model {
-    protected $table_name;   // set in $conf['tb_permissions']
+    protected $table_name;   // set in $conf['tb_permisos']
     protected $attributes = array(
       'group_id',
       'module',
@@ -25,7 +25,7 @@
     public $id = FALSE;
 
     function __construct($id=FALSE) {
-      $this->table_name = $GLOBALS['conf']['tb_permissions'];
+      $this->table_name = $GLOBALS['conf']['tb_permisos'];
       parent::__construct($id);
     }
 
@@ -44,6 +44,32 @@
       $sql .= " p.id=$id ";
       //
       return $this->db->get_row($sql,ARRAY_A);
+    }
+  }
+
+  class tipo_grupo extends model {
+    protected $table_name;   // set in $conf['tb_grupos']
+    protected $attributes = array(
+      'nombre'
+    );
+    public $data = array();
+    public $id = FALSE;
+
+    function __construct($id=FALSE) {
+      $this->table_name = $GLOBALS['conf']['tb_grupos'];
+      parent::__construct($id);
+    }
+
+    function permiso_por_grupo() {
+      $sql  = "select ";
+      $sql .= " * ";
+      $sql .= "from ";
+      $sql .= " {$GLOBALS['conf']['tb_permisos']} ";
+      $sql .= "where ";
+      $sql .= " group_id=%p1% ";   // current group.id in template
+      $sql .= "order by ";
+      $sql .= " module, act ";
+      return $sql;
     }
   }
 ?>
