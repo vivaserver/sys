@@ -31,20 +31,18 @@
     }
 
     function create($array) {
-      global $auth;
       // encode password before creating
-      $array['f_user_password'] = $auth->encoder->Encrypt_Text($array['f_user_password']);
+      $array['f_user_password'] = $GLOBALS['auth']->encoder->Encrypt_Text($array['f_user_password']);
       return parent::create($array);
     }
 
     function update($array) {
-      global $auth, $site;
       if ($array['f_user_password']) {
         // encode password before updating
-        $array['f_user_password'] = $auth->encoder->Encrypt_Text($array['f_user_password']);
+        $array['f_user_password'] = $GLOBALS['auth']->encoder->Encrypt_Text($array['f_user_password']);
       }
       if (parent::update($array)) {
-        if ($site->params['f_group_id'] == $this->conf['admin_group_id'] &&  $this->data['group_id'] != $this->conf['admin_group_id']) {
+        if ($GLOBALS['site']->params['f_group_id'] == $this->conf['admin_group_id'] &&  $this->data['group_id'] != $this->conf['admin_group_id']) {
           // user group changed to Admin. remove any previous enabled secretaria
           $sql  = "delete ";
           $sql .= "from ";

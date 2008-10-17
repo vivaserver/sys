@@ -26,7 +26,11 @@
       $this->encoder = new EnDecryptText();
       $this->validate_with = $validate_with;
       $auth = 0;
-      if ($conf['tb_permissions']) {
+
+      if ($conf['only_local_logins'] && !in_array(substr($_SERVER['REMOTE_ADDR'],0,7),array('192.168','127.0.0'))) {
+        // disallow login from remote ip's
+      }
+      elseif ($conf['tb_permissions']) {
         // permissions are user-group based, so get user-grup first
         if ($user->group_id) {
           $group_id = $user->group_id;
@@ -224,7 +228,6 @@
     // private | check user session timeout
     //
     function _checktimeout() {
-      global $db, $conf, $user;
       if ($_SESSION['user_id']) {
         // session still alive
         return TRUE;
@@ -235,11 +238,11 @@
           $sql  = "select ";
           $sql .= " * ";
           $sql .= "from ";
-          $sql .= " {$conf['tb_usuarios']} ";
+          $sql .= " {$GLOBALS['conf']['tb_usuarios']} ";
           $sql .= "where ";
           $sql .= " {$this->validate_with}='{$_COOKIE['user_name']}' and ";
           $sql .= " is_disabled!=1 ";
-          $row  = $db->get_row($sql,ARRAY_A);
+          $row  = $GLOBALS['db']->get_row($sql,ARRAY_A);
           if ($row) {
             $decd = $this->encoder->Decrypt_Text($row['user_password']);
             if ($decd == $_COOKIE['user_password']) {
@@ -247,19 +250,20 @@
               $_SESSION['user_group_id']  = $row['group_id'];
               $_SESSION['user_name']      = $row['user_name'];
               $_SESSION['user_full_name'] = strtoupper("{$row['last_name']}, {$row['first_name']}");
-              $user->id                   = $_SESSION['user_id'];
-              $user->group_id             = $_SESSION['user_group_id'];
-              $user->name                 = $_SESSION['user_name'];
+              //
+              $GLOBALS['user']->id        = $_SESSION['user_id'];
+              $GLOBALS['user']->group_id  = $_SESSION['user_group_id'];
+              $GLOBALS['user']->name      = $_SESSION['user_name'];
               // update last log in
               $sql   = "update ";
-              $sql  .= " {$conf['tb_usuarios']} ";
+              $sql  .= " {$GLOBALS['conf']['tb_usuarios']} ";
               $sql  .= "set ";
               $sql  .= " sess_id='".session_id()."', ";
               $sql  .= " last_login_at=now(), ";
-              $sql  .= " last_ip='{$user->user_ip}' ";
+              $sql  .= " last_ip='{$GLOBALS['user']->user_ip}' ";
               $sql  .= "where ";
               $sql  .= " {$this->validate_with}='{$_COOKIE['user_name']}' ";
-              $query = $db->query($sql);
+              $query = $GLOBALS['db']->query($sql);
               return TRUE;
             }
           }
