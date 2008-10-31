@@ -67,8 +67,6 @@
         $this->act    = "default";
         $this->params = array();
       }
-      $this->sysmsg = NULL;
-      $this->sysbtn = array();
     }
 
     //
