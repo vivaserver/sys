@@ -31,13 +31,13 @@
   load_file("core/user");
   load_file("core/auth");
 
-  @include($conf['app_home']."etc/models.php");
-
   $db   = new db($conf['db_user'],$conf['db_pass'],$conf['db_name'],$conf['db_host']);
   $tpl  = new clsTinyButStrong;
   $site = new site();
   $user = new user();
   $auth = new auth();
+
+  @include($conf['app_home']."etc/models.php");
 
   //
   // require app. or system file, in that order
