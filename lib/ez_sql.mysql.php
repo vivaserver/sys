@@ -352,7 +352,10 @@
         }
         else
         {
-          return null;
+          // when asked to return the result set as an array,
+          // return an empty array if the result set is empty.
+          // (originally returned NULL)
+          return array();
         }
       }
     }
